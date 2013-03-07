@@ -1,4 +1,4 @@
-Course "Programming with Python
+Course "Programming with Python"
 ====================
 Homeworks and Challenges
 --------------------
