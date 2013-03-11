@@ -17,6 +17,9 @@ class CoinsTest(unittest.TestCase):
     def test_coins_two(self):
         self.assert_coins(0.53, {50: 1, 2: 1, 1: 1})
 
+    def test_coins_two(self):
+        self.assert_coins(2.53, {100: 2, 50: 1, 2: 1, 1: 1})
+
     def test_composite_non_prime_coins(self):
         self.assert_coins(0.15, {10: 1, 5: 1})
  
