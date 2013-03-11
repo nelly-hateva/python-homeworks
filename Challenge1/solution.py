@@ -2,6 +2,8 @@ COINS = (100, 50, 20, 10, 5, 2, 1)
 
 
 def calculate_coins(amount):
+    if amount < 0:
+        raise ValueError
     coins_representation = {}
     amount_in_coins = round(amount*100)
     for coin in sorted(COINS, reverse=True):

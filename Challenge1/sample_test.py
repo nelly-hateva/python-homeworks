@@ -36,5 +36,8 @@ class CoinsTest(unittest.TestCase):
         for coin in COINS:
             self.assert_coins(coin / 100, {coin: 1})
 
+    def test_no_coins(self):
+        self.assertRaises(ValueError, lambda: solution.calculate_coins(-0.01))
+
 if __name__ == '__main__':
     unittest.main()
