@@ -9,36 +9,39 @@ class TicTacToeBoard:
                            'C1', 'C2', 'C3')
         self.valid_values = ('X', 'O')
         self.filled_cells = 0
+        self.turn = 'О'
 
     def __setitem__(self, index, item):
         if index not in self.valid_keys:
-            raise InvalidKey("Invalid key!")
+            raise InvalidKey('Invalid key!')
         if item not in self.valid_values:
-            raise InvalidValue("Invalid value!")
+            raise InvalidValue('Invalid value!')
         if self.board[index] != ' ':
-            raise InvalidMove("Invalid move!")
+            raise InvalidMove('Invalid move!')
+        if self.turn == item:
+            raise NotYourTurn("It's not your turn!")
         self.board[index] = item
+        self.turn = item
         self.filled_cells += 1
 
     def __getitem__(self, index):
         if index not in self.valid_keys:
-            raise InvalidKey("Invalid key!")
+            raise InvalidKey('Invalid key!')
         return self.board[index]
 
     def __str__(self):
-        line = ['', '', '', '']
+        line = ['', '', '']
         for i in range(1, 4):
-            line[i] = str(i) + ' | ' + self.board['A' + str(i)] +\
-                ' | ' + self.board['B' + str(i)] +\
-                ' | ' + self.board['C' + str(i)] + ' |\n'
-        return '\n -------------\n' +\
-               line[3] +\
-               ' -------------\n' +\
-               line[2] +\
-               ' -------------\n' +\
-               line[1] +\
-               ' -------------\n' +\
-               ' A B C \n'
+            line[i - 1] = \
+                '{} | {} | {} | {} |\n'.format(str(i),
+                                               self.board['A' + str(i)],
+                                               self.board['B' + str(i)],
+                                               self.board['C' + str(i)])
+        dashes = ' -------------\n'
+        return '\n{}{}{}{}{}{}{} A B C \n'.format(dashes, line[2],
+                                                  dashes, line[1],
+                                                  dashes, line[0],
+                                                  dashes)
 
     def game_status(self):
         if self.wins('X'):

@@ -84,6 +84,33 @@ class TicTacHomeworkTest(unittest.TestCase):
 
         self.assertEqual('Game in progress.', p.game_status())
 
+    def test_invalid_value_exception_raises(self):
+        invalid_value = solution.TicTacToeBoard()
+        with self.assertRaises(solution.InvalidValue):
+            invalid_value["A1"] = "F"
+
+    def test_invalid_key_exception_raises(self):
+        invalid_key = solution.TicTacToeBoard()
+        with self.assertRaises(solution.InvalidKey):
+            invalid_key["A51"] = "X"
+
+    def test_invalid_move_exception_raises(self):
+        invalid_move = solution.TicTacToeBoard()
+        with self.assertRaises(solution.InvalidMove):
+            invalid_move["A1"] = "X"
+            invalid_move["A1"] = "O"
+
+    def test_not_your_turn_exception_raises(self):
+        not_your_turn = solution.TicTacToeBoard()
+        with self.assertRaises(solution.NotYourTurn):
+            not_your_turn["A1"] = "X"
+            not_your_turn["A2"] = "X"
+
+    def test_not_your_turn_exception_raises_two(self):
+        not_your_turn = solution.TicTacToeBoard()
+        with self.assertRaises(solution.NotYourTurn):
+            not_your_turn["A1"] = "O"
+            not_your_turn["A2"] = "O"
 
 if __name__ == '__main__':
     unittest.main()
