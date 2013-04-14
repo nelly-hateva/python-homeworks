@@ -9,7 +9,7 @@ class TicTacToeBoard:
                            'C1', 'C2', 'C3')
         self.valid_values = ('X', 'O')
         self.filled_cells = 0
-        self.turn = 'О'
+        self.turn = 'unknown'
 
     def __setitem__(self, index, item):
         if index not in self.valid_keys:
@@ -18,7 +18,9 @@ class TicTacToeBoard:
             raise InvalidValue('Invalid value!')
         if self.board[index] != ' ':
             raise InvalidMove('Invalid move!')
-        if self.turn == item:
+        if self.turn == 'unknown':
+            self.turn = item
+        elif self.turn == item:
             raise NotYourTurn("It's not your turn!")
         self.board[index] = item
         self.turn = item
@@ -33,12 +35,12 @@ class TicTacToeBoard:
         line = ['', '', '']
         for i in range(1, 4):
             line[i - 1] = \
-                '{} | {} | {} | {} |\n'.format(str(i),
+                "{} | {} | {} | {} |\n".format(str(i),
                                                self.board['A' + str(i)],
                                                self.board['B' + str(i)],
                                                self.board['C' + str(i)])
-        dashes = ' -------------\n'
-        return '\n{}{}{}{}{}{}{} A B C \n'.format(dashes, line[2],
+        dashes = '  -------------\n'
+        return "\n{}{}{}{}{}{}{}    A   B   C  \n".format(dashes, line[2],
                                                   dashes, line[1],
                                                   dashes, line[0],
                                                   dashes)

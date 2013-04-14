@@ -5,27 +5,27 @@ import solution
 class TicTacHomeworkTest(unittest.TestCase):
     def test_empty(self):
         b = solution.TicTacToeBoard()
-        empty_board = '\n -------------\n' +\
+        empty_board = '\n  -------------\n' +\
             '3 |   |   |   |\n' +\
-            ' -------------\n' +\
+            '  -------------\n' +\
             '2 |   |   |   |\n' +\
-            ' -------------\n' +\
+            '  -------------\n' +\
             '1 |   |   |   |\n' +\
-            ' -------------\n' +\
-            ' A B C \n'
+            '  -------------\n' +\
+            '    A   B   C  \n'
 
         self.assertEqual(empty_board, b.__str__())
 
     def test_full(self):
         d = solution.TicTacToeBoard()
-        full_board = '\n -------------\n' +\
+        full_board = '\n  -------------\n' +\
             '3 | O | O | X |\n' +\
-            ' -------------\n' +\
+            '  -------------\n' +\
             '2 | X | X | O |\n' +\
-            ' -------------\n' +\
+            '  -------------\n' +\
             '1 | O | X | O |\n' +\
-            ' -------------\n' +\
-            ' A B C \n'
+            '  -------------\n' +\
+            '    A   B   C  \n'
 
         d["A1"] = 'O'
         d["B1"] = 'X'
@@ -62,6 +62,8 @@ class TicTacHomeworkTest(unittest.TestCase):
         v["A2"] = 'O'
         v["B3"] = 'X'
         v["A3"] = 'O'
+
+        self.assertEqual('O wins!', v.game_status())
 
     def test_draw(self):
         d = solution.TicTacToeBoard()
