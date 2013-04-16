@@ -40,10 +40,8 @@ class TicTacToeBoard:
                                                self.board['B' + str(i)],
                                                self.board['C' + str(i)])
         dashes = '  -------------\n'
-        return "\n{}{}{}{}{}{}{}    A   B   C  \n".format(dashes, line[2],
-                                                  dashes, line[1],
-                                                  dashes, line[0],
-                                                  dashes)
+        return "\n{d}{}{d}{}{d}{}{d}    A   B   C  \n".format(*line[::-1],
+                                                              d=dashes)
 
     def game_status(self):
         if self.wins('X'):
@@ -56,24 +54,16 @@ class TicTacToeBoard:
             return 'Game in progress.'
 
     def wins(self, gamer):
-        if self.board['A1'] == self.board['A2'] == self.board['A3'] == gamer:
-            return True
-        elif self.board['B1'] == self.board['B2'] == self.board['B3'] == gamer:
-            return True
-        elif self.board['C1'] == self.board['C2'] == self.board['C3'] == gamer:
-            return True
-        elif self.board['A1'] == self.board['B1'] == self.board['C1'] == gamer:
-            return True
-        elif self.board['A2'] == self.board['B2'] == self.board['C2'] == gamer:
-            return True
-        elif self.board['A3'] == self.board['B3'] == self.board['C3'] == gamer:
-            return True
-        elif self.board['A1'] == self.board['B2'] == self.board['C3'] == gamer:
-            return True
-        elif self.board['A3'] == self.board['B2'] == self.board['C1'] == gamer:
-            return True
-        else:
-            return False
+        winning_triples = (('A1', 'A2', 'A3'), ('B1', 'B2', 'B3'),
+                           ('C1', 'C2', 'C3'), ('A1', 'B1', 'C1'),
+                           ('A2', 'B2', 'C2'), ('A3', 'B3', 'C3'),
+                           ('A1', 'B2', 'C3'), ('A3', 'B2', 'C1'))
+        for triple in iter(winning_triples):
+            first, second, third = triple
+            if self.board[first] == self.board[second] == \
+               self.board[third] == gamer:
+                return True
+        return False
 
 
 class InvalidKey(Exception):
