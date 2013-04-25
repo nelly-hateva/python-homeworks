@@ -1,11 +1,21 @@
-def what_is_my_sign(day, month):
-    SIGNS = [(120, 'Козирог'), (219, 'Водолей'), (321, 'Риби'),
-             (421, 'Овен'), (521, 'Телец'), (621, 'Близнаци'),
-             (722, 'Рак'), (823, 'Лъв'), (923, 'Дева'),
-             (1023, 'Везни'), (1122, 'Скорпион'), (1222, 'Стрелец'),
-             (1232, 'Козирог')]
+ZODIAC = {
+    range(321, 421): 'Овен',
+    range(421, 521): 'Телец',
+    range(521, 621): 'Близнаци',
+    range(621, 722): 'Рак',
+    range(722, 823): 'Лъв',
+    range(823, 923): 'Дева',
+    range(923, 1023): 'Везни',
+    range(1023, 1122): 'Скорпион',
+    range(1122, 1222): 'Стрелец',
+    range(1222, 1232): 'Козирог',
+    range(101, 120): 'Козирог',
+    range(120, 219): 'Водолей',
+    range(219, 321): 'Риби',
+}
 
-    month_day = int("".join((str(month), '%02d' % day)))
-    for sign in SIGNS:
-        if month_day < sign[0]:
-            return sign[1]
+
+def what_is_my_sign(day, month):
+    for range_, sign in ZODIAC.items():
+        if month * 100 + day in range_:
+            return sign
