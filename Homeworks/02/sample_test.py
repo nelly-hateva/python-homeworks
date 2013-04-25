@@ -1,54 +1,44 @@
 import unittest
+from itertools import repeat
 
 import solution
 
 
-class GroupByTest(unittest.TestCase):
+class SecondHomeworkTests(unittest.TestCase):
 
-    def assert_group_by(self, func, seq, result):
-        self.assertEqual(solution.groupby(func, seq), result)
-
-    def test_group_by_main_workflow(self):
-        self.assert_group_by(lambda x: x % 2, [0, 1, 2, 3, 4, 5, 6, 7],
-                             {0: [0, 2, 4, 6], 1: [1, 3, 5, 7]})
-
-    def test_group_by_with_empty_seq(self):
-        self.assert_group_by(lambda x: x % 2, [], {})
-
-    def test_group_by_with_one_group(self):
-        self.assert_group_by(lambda x: 3, [0, 1, 2, 3, 4, 5, 6, 7],
-                             {3: [0, 1, 2, 3, 4, 5, 6, 7]})
-
-    def test_group_by_with_unique_groups(self):
-        self.assert_group_by(lambda x: x, [0, 1, 2, 3, 4, 5, 6, 7],
-                             {0: [0], 1: [1], 2: [2], 3: [3], 4: [4],
-                              5: [5], 6: [6], 7: [7]})
-
-    def test_group_by_with_duplicate_values(self):
-        self.assert_group_by(lambda x: x % 2, [0, 1, 1, 2, 3, 4, 5, 5, 6, 7],
-                             {0: [0, 2, 4, 6], 1: [1, 1, 3, 5, 5, 7]})
-
-    def test_groupby_odd_and_even(self):
-        expected = {'even': [2, 8, 10, 12], 'odd': [1, 3, 5, 9]}
-        actual = solution.groupby(lambda x: 'odd' if x % 2 else 'even',
-                                  [1, 2, 3, 5, 8, 9, 10, 12])
+    def test_groupby_empty(self):
+        expected = {}
+        actual = solution.groupby(lambda x: x, [])
         self.assertEqual(expected, actual)
 
+    def test_groupby_no_repetitions(self):
+        expected = {1: [1], 2: [2], 3: [3], 5: [5], 'se7en': ['se7en']}
+        actual = solution.groupby(lambda x: x, [1, 2, 3, 5, 'se7en'], )
+        self.assertEqual(expected, actual)
 
-class IterateTest(unittest.TestCase):
+    def test_groupby_simple_types(self):
+        expected = {'even': [2, 8, 10, 12], 'odd': [1, 3, 5, 9]}
+        actual = solution.groupby(
+            lambda x: 'odd' if x % 2 else 'even', [1, 2, 3, 5, 8, 9, 10, 12])
+        self.assertEqual(expected, actual)
 
-    def test_iterate_ordered_calls_one(self):
-        powers_of_two = solution.iterate(lambda x: x * 2)
-        f = next(powers_of_two)
-        self.assertEqual(3, f(3))
-        f = next(powers_of_two)
-        self.assertEqual(6, f(3))
-        f = next(powers_of_two)
-        self.assertEqual(12, f(3))
-        f = next(powers_of_two)
-        self.assertEqual(24, f(3))
+    def test_groupby_with_generator(self):
+        expected = {'big': [35, 40, 45], 'small': [0, 5, 10, 15, 20, 25, 30]}
+        actual = solution.groupby(
+            lambda x: 'big' if x > 30 else 'small', range(0, 50, 5))
+        self.assertEqual(expected, actual)
 
-    def test_iterate_ordered_calls_two(self):
+    def test_groupby_nonequalty(self):
+        actual = solution.groupby(
+            lambda x: 'odd' if x % 2 else 'even', [1, 2, 3, 4])
+        self.assertNotEqual({'even': 42}, actual)
+
+    def test_iterate_start_with_identity_function(self):
+        bracketisers = solution.iterate(lambda x: '(' + x + ')')
+        no_brackets = next(bracketisers)
+        self.assertEqual('hello world', no_brackets('hello world'))
+
+    def test_iterate_ordered_calls(self):
         powers_of_two = solution.iterate(lambda x: x * 2)
         f = next(powers_of_two)
         self.assertEqual(1 * 'eggs', f('eggs'))
@@ -59,57 +49,67 @@ class IterateTest(unittest.TestCase):
         f = next(powers_of_two)
         self.assertEqual(8 * 'spameggs', f('spameggs'))
 
-    def iterate(self, func, times, param):
-        i = solution.iterate(func)
-        for t in range(-1, times):
-            result = next(i)(param)
-        return result
+    def test_iterate_out_of_order_calls(self):
+        powers_of_two = solution.iterate(lambda x: x * 2)
+        f0 = next(powers_of_two)
+        f1 = next(powers_of_two)
+        f2 = next(powers_of_two)
+        f3 = next(powers_of_two)
+        self.assertEqual(1 * 'eggs', f0('eggs'))
+        self.assertEqual(2 * 'ham', f1('ham'))
+        self.assertEqual(4 * 'spam', f2('spam'))
+        self.assertEqual(8 * 'spameggs', f3('spameggs'))
 
-    def assert_iterate(self, func, times, param, result):
-        self.assertEqual(self.iterate(func, times, param), result)
+    test_iterate_out_of_order_calls_again = \
+        test_iterate_out_of_order_calls
 
-    def test_iterate_identity(self):
-        self.assert_iterate(lambda x: x ** 3, 0, 3, 3)
+    test_iterate_out_of_order_calls_yet_again = \
+        test_iterate_out_of_order_calls
 
-    def test_iterate_composition(self):
-        for i in range(0, 10):
-            self.assert_iterate(lambda x: 2 * x, i, 3, (2 ** i) * 3)
+    def test_zip_with_empty(self):
+        expected = []
+        actual = solution.zip_with(lambda x: x)
+        self.assertEqual(expected, list(actual))
 
-    def test_iterate_param_count(self):
-        self.assert_iterate(lambda: 3, 0, 3, 3)
-
-
-class ZipWithTest(unittest.TestCase):
-
-    def assert_zip_with(self, func, iterables, result):
-        self.assertEqual(list(solution.zip_with(func, *iterables)), result)
-
-    def test_zip_with_equal_iterables_len(self):
-        self.assert_zip_with(lambda x, y, z: x + y + z,
-                             [['John', 'Miles'],
-                             [' '] * 2,
-                             ['Coltrane', 'Davis']],
-                             ['John Coltrane', 'Miles Davis'])
-
-    def test_zip_with_different_iterables_len(self):
-        self.assert_zip_with(lambda x, y, z: x + y + z,
-                             [['John'],
-                             [' '] * 2,
-                             ['Coltrane', 'Davis', 'Grohl']],
-                             ['John Coltrane'])
-
-    def test_zip_without_iterables(self):
-        self.assert_zip_with(lambda: 3, [], [])
-
-    def test_zip_with_simple(self):
+    def test_zip_with_one_shorter_seqence(self):
         first_names = ['Charlie', 'Dizzy']
-        last_names = ['Parker', 'Gillespie']
+        last_names = ['Parker', 'Gillespie', 'Monk']
         expected = ['CharlieParker', 'DizzyGillespie']
         actual = solution.zip_with(str.__add__, first_names, last_names)
         self.assertEqual(expected, list(actual))
 
+    def test_zip_with_infinite_sequence(self):
+        first_names = ['John', 'Miles']
+        last_names = ['Coltrane', 'Davis']
+        spaces = repeat(' ')
+        expected = ['John Coltrane', 'Miles Davis']
+        actual = solution.zip_with(
+            lambda x, y, z: x + y + z, first_names, spaces, last_names)
+        self.assertEqual(expected, list(actual))
 
-class CacheTest(unittest.TestCase):
+    def test_zip_with_vargs_function(self):
+        expected = [1 + 2 + 3 + 5 + 8]
+        actual = solution.zip_with(lambda *x: sum(x), [1], [2], [3], [5], [8])
+        self.assertEqual(expected, list(actual))
+
+    def test_zip_with_nonequalty(self):
+        numbers1 = [1, 3]
+        numbers2 = [2, 4]
+        actual = solution.zip_with(int.__add__, numbers1, numbers2)
+        self.assertNotEqual([3, 5, 8], list(actual))
+
+    def test_cache_no_cache(self):
+        call_count = 0
+
+        def double(x):
+            nonlocal call_count
+            call_count += 1
+            return 2 * x
+
+        cached_double = solution.cache(double, 0)
+        self.assertEqual(42 * 2, cached_double(42))
+        self.assertEqual(5 * 2, cached_double(5))
+        self.assertEqual(2, call_count)
 
     def test_cache_call_is_cached(self):
         call_count = 0
@@ -124,51 +124,52 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(256, cached_double(128))
         self.assertEqual(1, call_count)
 
-    def test_cache_size(self):
+    def test_cache_cache_is_not_global(self):
         call_count = 0
 
-        def inc(x):
+        def double(x):
             nonlocal call_count
             call_count += 1
-            return x + 1
+            return 2 * x
 
-        cached_inc = solution.cache(inc, 2)
-        self.assertEqual(2, cached_inc(1))
-        self.assertEqual(2, cached_inc(1))
-        self.assertEqual(1, call_count)
-
-        self.assertEqual(5, cached_inc(4))
-        self.assertEqual(5, cached_inc(4))
+        cached_double1 = solution.cache(double, 3)
+        cached_double2 = solution.cache(double, 3)
+        self.assertEqual(42 * 2, cached_double1(42))
+        self.assertEqual(42 * 2, cached_double2(42))
         self.assertEqual(2, call_count)
 
-        self.assertEqual(2, cached_inc(1))
-        self.assertEqual(2, cached_inc(1))
-        self.assertEqual(2, call_count)
+    def test_cache_size_is_respected(self):
+        call_count = 0
 
-        self.assertEqual(1, cached_inc(0))
-        self.assertEqual(1, cached_inc(0))
-        self.assertEqual(3, call_count)
+        def double(x):
+            nonlocal call_count
+            call_count += 1
+            return 2 * x
 
-        self.assertEqual(2, cached_inc(1))
-        self.assertEqual(2, cached_inc(1))
+        cached_double = solution.cache(double, 2)
+        self.assertEqual(2, cached_double(1))
+        self.assertEqual(4, cached_double(2))
+        self.assertEqual(6, cached_double(3))
+        self.assertEqual(2, cached_double(1))
+
         self.assertEqual(4, call_count)
 
-    def test_cache_two_arguments(self):
+    def test_cache_function_with_vargs(self):
         call_count = 0
 
-        def mult(x, y):
+        def sum_varargs(*x):
             nonlocal call_count
             call_count += 1
-            return x * y
+            return sum(x)
 
-        cached_mult = solution.cache(mult, 10)
-        self.assertEqual(2, cached_mult(1, 2))
-        self.assertEqual(2, cached_mult(1, 2))
-        self.assertEqual(1, call_count)
+        cached_sum = solution.cache(sum_varargs, 10)
+        self.assertEqual(6, cached_sum(1, 2, 3))
+        self.assertEqual(9, cached_sum(4, 5))
+        self.assertEqual(6, cached_sum(1, 2, 3))
+        self.assertEqual(6, cached_sum(3, 2, 1, 0))
 
-        self.assertEqual(6, cached_mult(3, 2))
-        self.assertEqual(6, cached_mult(3, 2))
-        self.assertEqual(2, call_count)
+        self.assertEqual(3, call_count)
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     unittest.main()
