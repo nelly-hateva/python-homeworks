@@ -1,64 +1,77 @@
+from itertools import product
+
+
 class TicTacToeBoard:
+    COLUMNS = ('1', '2', '3')
+    ROWS = ('A', 'B', 'C')
+    WINNING_TRIPLES = (('A1', 'A2', 'A3'),
+                       ('B1', 'B2', 'B3'),
+                       ('C1', 'C2', 'C3'),
+                       ('A1', 'B1', 'C1'),
+                       ('A2', 'B2', 'C2'),
+                       ('A3', 'B3', 'C3'),
+                       ('A1', 'B2', 'C3'),
+                       ('A3', 'B2', 'C1'))
+    VALUES = ('X', 'O')
+    GAME_IN_PROGRESS = 'Game in progress.'
+    DRAW = 'Draw!'
+    X_WINS = 'X wins!'
+    O_WINS = 'O wins!'
+    EMPTY = ' '
+    BOARD_REPRESENTATION = '''
+  -------------
+3 | {A3} | {B3} | {C3} |
+  -------------
+2 | {A2} | {B2} | {C2} |
+  -------------
+1 | {A1} | {B1} | {C1} |
+  -------------
+    A   B   C  
+'''
 
     def __init__(self):
-        self.board = {'A1': ' ', 'A2': ' ', 'A3': ' ',
-                      'B1': ' ', 'B2': ' ', 'B3': ' ',
-                      'C1': ' ', 'C2': ' ', 'C3': ' '}
-        self.valid_keys = ('A1', 'A2', 'A3',
-                           'B1', 'B2', 'B3',
-                           'C1', 'C2', 'C3')
-        self.valid_values = ('X', 'O')
+        self.KEYS = [''.join(coordinates)
+                     for coordinates in product(self.ROWS, self.COLUMNS)]
+        self.board = dict.fromkeys(self.KEYS, self.EMPTY)
         self.filled_cells = 0
-        self.turn = 'unknown'
+        self.last_player = None
+        self.status = self.GAME_IN_PROGRESS
 
-    def __setitem__(self, index, item):
-        if index not in self.valid_keys:
-            raise InvalidKey('Invalid key!')
-        if item not in self.valid_values:
-            raise InvalidValue('Invalid value!')
-        if self.board[index] != ' ':
-            raise InvalidMove('Invalid move!')
-        if self.turn == 'unknown':
-            self.turn = item
-        elif self.turn == item:
-            raise NotYourTurn("It's not your turn!")
-        self.board[index] = item
-        self.turn = item
+    def __setitem__(self, key, value):
+        if key not in self.KEYS:
+            raise InvalidKey()
+        if value not in self.VALUES:
+            raise InvalidValue()
+        if self.board[key] != self.EMPTY:
+            raise InvalidMove()
+        if self.last_player is None:
+            self.last_player = value
+        elif self.last_player == value:
+            raise NotYourTurn()
+        self.board[key] = value
+        self.last_player = value
         self.filled_cells += 1
 
-    def __getitem__(self, index):
-        if index not in self.valid_keys:
-            raise InvalidKey('Invalid key!')
-        return self.board[index]
+    def __getitem__(self, key):
+        if key not in self.KEYS:
+            raise InvalidKey()
+        return self.board[key]
 
     def __str__(self):
-        line = ['', '', '']
-        for i in range(1, 4):
-            line[i - 1] = \
-                "{} | {} | {} | {} |\n".format(str(i),
-                                               self.board['A' + str(i)],
-                                               self.board['B' + str(i)],
-                                               self.board['C' + str(i)])
-        dashes = '  -------------\n'
-        return "\n{d}{}{d}{}{d}{}{d}    A   B   C  \n".format(*line[::-1],
-                                                              d=dashes)
+        return self.BOARD_REPRESENTATION.format(**self.board)
 
     def game_status(self):
-        if self.wins('X'):
-            return 'X wins!'
-        elif self.wins('O'):
-            return 'O wins!'
+        if self.winner('X'):
+            return self.X_WINS
+        elif self.winner('O'):
+            return self.O_WINS
         elif self.filled_cells == 9:
-            return 'Draw!'
+            return self.DRAW
         else:
-            return 'Game in progress.'
+            return self.GAME_IN_PROGRESS
 
-    def wins(self, gamer):
-        winning_triples = (('A1', 'A2', 'A3'), ('B1', 'B2', 'B3'),
-                           ('C1', 'C2', 'C3'), ('A1', 'B1', 'C1'),
-                           ('A2', 'B2', 'C2'), ('A3', 'B3', 'C3'),
-                           ('A1', 'B2', 'C3'), ('A3', 'B2', 'C1'))
-        for triple in iter(winning_triples):
+    def winner(self, gamer):
+        for triple in iter(self.WINNING_TRIPLES):
             first, second, third = triple
             if self.board[first] == self.board[second] == \
                self.board[third] == gamer:
