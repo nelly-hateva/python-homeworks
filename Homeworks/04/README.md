@@ -82,4 +82,3 @@
     ...
     >>> board.game_status()
     'O wins!'
-

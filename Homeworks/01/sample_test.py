@@ -44,6 +44,12 @@ class HoroscopeTest(unittest.TestCase):
     def test_capricorn(self):
         self.assert_sign([((22, 31), 12), ((1, 19), 1)], 'Козирог')
 
+    def test_living_on_the_edge(self):
+        self.assertEqual(solution.what_is_my_sign(20, 6), 'Близнаци')
+
+    def test_sludge(self):
+        self.assertEqual(solution.what_is_my_sign(21, 5), 'Близнаци')
+
     def test_named_arguments(self):
         self.assertEqual(solution.what_is_my_sign(month=6, day=20), 'Близнаци')
 

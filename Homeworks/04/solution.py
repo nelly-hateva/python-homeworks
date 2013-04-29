@@ -18,16 +18,14 @@ class TicTacToeBoard:
     X_WINS = 'X wins!'
     O_WINS = 'O wins!'
     EMPTY = ' '
-    BOARD_REPRESENTATION = '''
-  -------------
-3 | {A3} | {B3} | {C3} |
-  -------------
-2 | {A2} | {B2} | {C2} |
-  -------------
-1 | {A1} | {B1} | {C1} |
-  -------------
-    A   B   C  
-'''
+    BOARD_REPRESENTATION = '\n  -------------\n' +\
+                           '3 | {A3} | {B3} | {C3} |\n' +\
+                           '  -------------\n' +\
+                           '2 | {A2} | {B2} | {C2} |\n' +\
+                           '  -------------\n' +\
+                           '1 | {A1} | {B1} | {C1} |\n' +\
+                           '  -------------\n' +\
+                           '    A   B   C  \n'
 
     def __init__(self):
         self.KEYS = [''.join(coordinates)
