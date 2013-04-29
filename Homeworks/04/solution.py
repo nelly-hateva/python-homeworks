@@ -49,24 +49,20 @@ class TicTacToeBoard:
         self.board[key] = value
         self.last_player = value
         self.filled_cells += 1
+        self.update_game_status()
 
     def __getitem__(self, key):
         if key not in self.KEYS:
             raise InvalidKey()
         return self.board[key]
 
-    def __str__(self):
-        return self.BOARD_REPRESENTATION.format(**self.board)
-
-    def game_status(self):
-        if self.winner('X'):
-            return self.X_WINS
-        elif self.winner('O'):
-            return self.O_WINS
+    def update_game_status(self):
+        if self.last_player == 'X' and self.winner('X'):
+            self.status = self.X_WINS
+        elif self.last_player == 'O' and self.winner('O'):
+            self.status = self.O_WINS
         elif self.filled_cells == 9:
-            return self.DRAW
-        else:
-            return self.GAME_IN_PROGRESS
+            self.status = self.DRAW
 
     def winner(self, gamer):
         for triple in iter(self.WINNING_TRIPLES):
@@ -75,6 +71,12 @@ class TicTacToeBoard:
                self.board[third] == gamer:
                 return True
         return False
+
+    def __str__(self):
+        return self.BOARD_REPRESENTATION.format(**self.board)
+
+    def game_status(self):
+        return self.status
 
 
 class InvalidKey(Exception):
