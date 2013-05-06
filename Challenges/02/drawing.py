@@ -2,9 +2,9 @@ import turtle
 from solution import dragon_fractal
 
 
-LINE_LENGTH = 5  # 1
+LINE_LENGTH = 1
 DELAY_MS = 0
-REPEAT_TIMES = 11  # 15
+REPEAT_TIMES = 16
 
 
 def str_to_heading(str_):
