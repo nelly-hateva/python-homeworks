@@ -1,4 +1,3 @@
-from collections import deque as deque
 from itertools import count as count
 
 UP = 'up'
@@ -9,7 +8,7 @@ ROTATED = {UP: LEFT, DOWN: RIGHT, LEFT: DOWN, RIGHT: UP}
 
 
 def dragon_fractal():
-    grapfic = deque()
+    grapfic = []
     yield UP
     grapfic.append(UP)
 
