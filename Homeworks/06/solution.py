@@ -61,12 +61,20 @@ class WorldObject:
 class Cell:
     def __init__(self, contents=None):
         if isinstance(contents, WorldObject) or contents is None:
-            self.contents = contents
+            self._contents = contents
         else:
             raise TypeError
 
+    @property
     def contents(self):
-        return self.contents
+        return self._contents
+
+    @contents.setter
+    def contents(self, value):
+        if isinstance(value, WorldObject) or value is None:
+            self._contents = value
+        else:
+            raise TypeError
 
     def is_empty(self):
         return self.contents is None
@@ -141,6 +149,13 @@ class World():
 
         self.cells[index] = value
 
+    def __str__(self):
+        rows = (
+            ''.join(str(self.cells[x][y]) for x in range(self.width))
+            for y in range(self.width)
+        )
+        return '\n'.join(rows)
+
 
 class PythonPart(WorldObject):
     def __str__(self):
@@ -166,23 +181,15 @@ class Python:
 
         self.head = PythonHead()
         x, y = coords
-        self.world[x][y].contents = Cell(self.head)
-        print("head at", x, y)
-        print(self.dump_world())
+        self.world[x][y].contents = self.head
         for part_num in range(1, size + 1):
             x, y = coords - direction * part_num
-            self.world[x][y] = Cell(PythonPart())
-            print("part at", x, y)
-        self.last_part_index = coords - direction * size
-
-    def dump_world(self):
-        rows = (
-            ''.join(str(self.world[x][y]) for x in range(self.world.width))
-            for y in range(self.world.width)
-        )
-        return '\n'.join(rows)
+            self.world[x][y].contents = PythonPart()
 
     def move(self, direction):
+        if self.direction == -direction:
+            raise ValueError
+        self.direction = direction
         self.coords += direction
         x, y = self.coords
         try:
@@ -194,10 +201,7 @@ class Python:
             raise Death
         if isinstance(found, Food):
             self.size += 1
-        else:
-            v, w = self.last_part_index
-            self.world[v][w] = Cell()
-        self.world[x][y] = self.head
+        self.world[x][y].contents = self.head
 
 
 class Death(Exception):
