@@ -102,7 +102,6 @@ class PythonTest(unittest.TestCase):
         world = World(25)
         py_size = randint(3, 5)
         py = Python(world, Vec2D(10, 10), py_size, direction)
-        self.assertIsInstance(world[10][10].contents, PythonHead)
         py.move(direction)
         x, y = Vec2D(10, 10) + direction
 
