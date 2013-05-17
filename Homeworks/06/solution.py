@@ -1,3 +1,59 @@
+from random import randint, choice
+
+
+class Vec2D:
+    def __init__(self, x, y):
+        self._x, self._y = x, y
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    def __add__(self, other):
+        if isinstance(other, Vec2D):
+            return Vec2D(self._x + other.x, self._y + other.y)
+        else:
+            raise TypeError
+
+    def __sub__(self, other):
+        if isinstance(other, Vec2D):
+            return Vec2D(self._x - other.x, self._y - other.y)
+        else:
+            raise TypeError
+
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            return Vec2D(self._x * other, self._y * other)
+        else:
+            raise TypeError
+    __rmul__ = __mul__
+
+    def __neg__(self):
+        return Vec2D(-self.x, -self.y)
+
+    def __eq__(self, other):
+        if isinstance(other, Vec2D):
+            return self._x == other.x and self._y == other.y
+        else:
+            return False
+
+    def __ne__(self, other):
+        if isinstance(other, Vec2D):
+            return self._x != other.x or self._y != other.y
+        else:
+            return False
+
+    def __repr__(self):
+        return 'Vec2d(%s, %s)' % (self.x, self.y)
+
+    def __iter__(self):
+        return iter((self._x, self._y))
+
+
 class WorldObject:
     pass
 
@@ -15,68 +71,133 @@ class Cell:
     def is_empty(self):
         return self.contents is None
 
+    def __str__(self):
+        return ".." if self.is_empty() else str(self.contents)
+
+
+class Food(WorldObject):
+    def __init__(self, energy):
+        self.energy = energy
+
 
 class World():
+    class Column:
+        def __init__(self, width):
+            self._data = [Cell() for _ in range(width)]
+            self._width = width
+
+        @property
+        def width(self):
+            return self._width
+
+        @property
+        def data(self):
+            return self._data
+
+        def __getitem__(self, key):
+            if not isinstance(key, int):
+                raise TypeError
+            if key not in range(self.width):
+                raise IndexError
+
+            return self.data[key]
+
+        def __setitem__(self, key, value):
+            if not isinstance(key, int):
+                raise TypeError
+            if key not in range(self.width):
+                raise IndexError
+
+            self.data[key] = value
+
     def __init__(self, width):
-        self.width = width
-        self.cells = [[Cell()] * width] * width
+        self._width = width
+        self._cells = [World.Column(width) for _ in range(width)]
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def cells(self):
+        return self._cells
 
     def __len__(self):
         return self.width
 
-    def __getitem__(self, index):
-        if index < 0 or index > self.width:
+    def __getitem__(self, key):
+        if not isinstance(key, int):
+            raise TypeError
+        if key not in range(self.width):
             raise IndexError
-        else:
-            return self.cells[index]
 
+        return self.cells[key]
 
-class Vec2D:
-    def __init__(self, x, y):
-        self.x, self.y = x, y
+    def __setitem__(self, key, value):
+        if not isinstance(key, int):
+            raise TypeError
+        if key not in range(self.width):
+            raise IndexError
 
-    def __add__(self, other):
-        return Vec2D(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return Vec2D(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, other):
-        return Vec2D(self.x * other, self.y * other)
-
-    def __iter__(self):
-        yield self.x
-        yield self.y
+        self.cells[index] = value
 
 
 class PythonPart(WorldObject):
-    pass
+    def __str__(self):
+        return "##"
 
 
 class PythonHead(PythonPart):
-    pass
+    def __str__(self):
+        return "@@"
 
 
 class Python:
     LEFT = Vec2D(-1, 0)
     RIGHT = Vec2D(1, 0)
-    UP = Vec2D(0, 1)
-    DOWN = Vec2D(0, -1)
+    UP = Vec2D(0, -1)
+    DOWN = Vec2D(0, 1)
 
     def __init__(self, world, coords, size, direction):
         self.world = world
         self.coords = coords
         self.size = size
         self.direction = direction
+
         self.head = PythonHead()
+        x, y = coords
+        self.world[x][y].contents = Cell(self.head)
+        print("head at", x, y)
+        print(self.dump_world())
+        for part_num in range(1, size + 1):
+            x, y = coords - direction * part_num
+            self.world[x][y] = Cell(PythonPart())
+            print("part at", x, y)
+        self.last_part_index = coords - direction * size
+
+    def dump_world(self):
+        rows = (
+            ''.join(str(self.world[x][y]) for x in range(self.world.width))
+            for y in range(self.world.width)
+        )
+        return '\n'.join(rows)
 
     def move(self, direction):
-        pass
+        self.coords += direction
+        x, y = self.coords
+        try:
+            found = self.world[x][y].contents
+        except IndexError:
+            raise Death
 
-
-class Food(WorldObject):
-    def __init__(self, energy):
-        self.energy = energy
+        if isinstance(found, PythonPart):
+            raise Death
+        if isinstance(found, Food):
+            self.size += 1
+        else:
+            v, w = self.last_part_index
+            self.world[v][w] = Cell()
+        self.world[x][y] = self.head
 
 
 class Death(Exception):
