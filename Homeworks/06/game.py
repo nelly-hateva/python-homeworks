@@ -6,49 +6,32 @@ from pygame.locals import *
 
 class PythonGame:
     CAPTION_TEXT = 'Pythons bite!'
-    WORLD_WIDTH = 600
+    WORLD_WIDTH = 704
     SIZE = WORLD_WIDTH, WORLD_WIDTH
     BACKGROUND_COLOR = 154, 205, 50
-    SNAKE_COLOR = 110, 139, 61
-    FOOD_COLOR = 255, 0, 0
+    PYTHON_COLOR = 110, 139, 61
+    APPLE_COLOR = 255, 0, 0
     running = True
 
-    def play(self):
+    def __init__(self):
+        self.world = World(self.WORLD_WIDTH)
         pygame.init()
-        world = World(self.WORLD_WIDTH)
-
-        row, col = randint(0, self.WORLD_WIDTH), randint(0, self.WORLD_WIDTH)
-        coords = Vec2D(row, col)
-        py_size = randint(3, 5)
-        python = Python(world, coords, py_size, Python.LEFT)
-
-        food_cells = randint(5, 11)
-        food = [Food(randint(1, 10)) for _ in range(food_cells)]
-
-        screen = pygame.display.set_mode(self.SIZE)
+        self.screen = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption(self.CAPTION_TEXT)
 
-        # Event loop
+    def play(self):
         while PythonGame.running:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     return
 
             # Fill background
-            background = pygame.Surface(screen.get_size())
+            background = pygame.Surface(self.screen.get_size())
             background = background.convert()
             background.fill(self.BACKGROUND_COLOR)
 
-            # Display snake
-            font = pygame.font.Font(None, 20)
-            snake = '@@' + '##' * python.size
-            text = font.render(snake, 1, self.SNAKE_COLOR)
-            textpos = text.get_rect()
-            textpos.centerx = python.coords.x
-            textpos.centery = python.coords.y
-            background.blit(text, textpos)
-            screen.blit(background, (0, 0))
-            pygame.display.flip()
+            self.draw_apple()
+            self.draw_python()
 
             key = pygame.key.get_pressed()
             if key[pygame.K_LEFT]:
@@ -59,6 +42,25 @@ class PythonGame:
                 python.move(Python.UP)
             if key[pygame.K_DOWN]:
                 python.move(Python.DOWN)
+
+            pygame.display.flip()
+
+    def draw_python(self):
+        row, col = randint(0, self.WORLD_WIDTH), randint(0, self.WORLD_WIDTH)
+        coords = Vec2D(row, col)
+        python = Python(self.world, coords, 3, Python.LEFT)
+        r, g, b = self.PYTHON_COLOR
+        x, y = python.coords
+        for ix in range(-5, 5):
+            for iy in range(-5, 5):
+                self.screen.set_at((x + ix, y + iy), (r, g, b))
+
+    def draw_apple(self):
+        r, g, b = self.APPLE_COLOR
+        x, y = randint(0, self.WORLD_WIDTH), randint(0, self.WORLD_WIDTH)
+        for ix in range(-5, 5):
+            for iy in range(-5, 5):
+                self.screen.set_at((x + ix, y + iy), (r, g, b))
 
 
 PythonGame().play()

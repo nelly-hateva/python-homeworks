@@ -88,7 +88,7 @@ class Food(WorldObject):
         self.energy = energy
 
     def __str__(self):
-        return "FF"
+        return "AA"
 
 
 class World():
