@@ -6,8 +6,8 @@ from pygame.locals import *
 
 class PythonGame:
     CAPTION_TEXT = 'Pythons bite!'
-    WORLD_WIDTH = 300
-    SIZE = WORLD_WIDTH * 2, WORLD_WIDTH * 2
+    WORLD_WIDTH = 600
+    SIZE = WORLD_WIDTH, WORLD_WIDTH
     BACKGROUND_COLOR = 154, 205, 50
     SNAKE_COLOR = 110, 139, 61
     FOOD_COLOR = 255, 0, 0
@@ -40,12 +40,12 @@ class PythonGame:
             background.fill(self.BACKGROUND_COLOR)
 
             # Display snake
-            font = pygame.font.Font(None, 30)
+            font = pygame.font.Font(None, 20)
             snake = '@@' + '##' * python.size
             text = font.render(snake, 1, self.SNAKE_COLOR)
             textpos = text.get_rect()
-            textpos.centerx = python.coords.x * 2
-            textpos.centery = python.coords.y * 2
+            textpos.centerx = python.coords.x
+            textpos.centery = python.coords.y
             background.blit(text, textpos)
             screen.blit(background, (0, 0))
             pygame.display.flip()
