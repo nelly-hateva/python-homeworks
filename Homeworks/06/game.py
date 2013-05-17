@@ -41,19 +41,24 @@ class PythonGame:
 
             # Display snake
             font = pygame.font.Font(None, 30)
-            snake_parts = ''.join(str(PythonPart()) for x in range(python.size))
-            snake = '@@'.join(snake_parts)
+            snake = '@@' + '##' * python.size
             text = font.render(snake, 1, self.SNAKE_COLOR)
             textpos = text.get_rect()
             textpos.centerx = python.coords.x * 2
             textpos.centery = python.coords.y * 2
             background.blit(text, textpos)
-            try:
-                python.move(Python.LEFT)
-            except Death:
-                pass
             screen.blit(background, (0, 0))
             pygame.display.flip()
+
+            key = pygame.key.get_pressed()
+            if key[pygame.K_LEFT]:
+                python.move(Python.LEFT)
+            if key[pygame.K_RIGHT]:
+                python.move(Python.RIGHT)
+            if key[pygame.K_UP]:
+                python.move(Python.UP)
+            if key[pygame.K_DOWN]:
+                python.move(Python.DOWN)
 
 
 PythonGame().play()
