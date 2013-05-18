@@ -23,6 +23,9 @@ class PythonGame:
         pygame.display.set_caption(self.CAPTION_TEXT)
 
     def play(self):
+        background = pygame.Surface(self.screen.get_size())
+        background = background.convert()
+        background.fill(self.BACKGROUND_COLOR)
         self.draw_apple()
         self.draw_python()
         while PythonGame.running:
@@ -30,28 +33,34 @@ class PythonGame:
                 if event.type == QUIT:
                     return
 
-            # Fill background
-            background = pygame.Surface(self.screen.get_size())
-            background = background.convert()
-            background.fill(self.BACKGROUND_COLOR)
-
-            
-
             key = pygame.key.get_pressed()
-            if key[pygame.K_LEFT]:
-                self.python.move(Python.LEFT)
-                self.draw_python()
-            if key[pygame.K_RIGHT]:
-                self.python.move(Python.RIGHT)
-                self.draw_python()
-            if key[pygame.K_UP]:
-                self.python.move(Python.UP)
-                self.draw_python()
-            if key[pygame.K_DOWN]:
-                self.python.move(Python.DOWN)
-                self.draw_python()
+            try:
+                if key[pygame.K_LEFT]:
+                    self.python.move(Python.LEFT)
+                    self.draw_python()
+                    background.fill(self.BACKGROUND_COLOR)
+                    pygame.display.flip()
+                if key[pygame.K_RIGHT]:
+                    self.python.move(Python.RIGHT)
+                    background.fill(self.BACKGROUND_COLOR)
+                    self.draw_python()
+                    pygame.display.flip()
+                if key[pygame.K_UP]:
+                    self.python.move(Python.UP)
+                    background.fill(self.BACKGROUND_COLOR)
+                    self.draw_python()
+                    pygame.display.flip()
+                if key[pygame.K_DOWN]:
+                    self.python.move(Python.DOWN)
+                    background.fill(self.BACKGROUND_COLOR)
+                    self.draw_python()
+                    pygame.display.flip()
 
-            pygame.display.flip()
+            except (Death, ValueError):
+                font = pygame.font.Font(None, 50)
+                game_over = font.render("Game Over", 1, (255, 0, 0))
+                self.screen.blit(game_over, (352, 352))
+                #PythonGame.running = False
 
     def draw_python(self):
         r, g, b = self.PYTHON_COLOR

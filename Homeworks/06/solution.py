@@ -183,18 +183,20 @@ class Python:
         self.direction = direction
 
         self.head = PythonHead()
-        x, y = coords
+        self.parts = []
+        x, y = self.coords
         self.world[x][y].contents = self.head
         for part_num in range(1, size + 1):
             x, y = coords - direction * part_num
+            self.parts.append(Vec2D(x, y))
             self.world[x][y].contents = PythonPart()
 
     def move(self, direction):
         if self.direction == -direction:
             raise ValueError
         self.direction = direction
-        self.coords += direction
-        x, y = self.coords
+        newpos = self.coords + direction
+        x, y = newpos
         try:
             found = self.world[x][y].contents
         except IndexError:
@@ -204,7 +206,14 @@ class Python:
             raise Death
         if isinstance(found, Food):
             self.size += 1
+        else:
+            x, y = self.parts.pop(0)
+            self.world[x][y].contents = None
         self.world[x][y].contents = self.head
+        x, y = self.coords
+        self.world[x][y].contents = PythonPart()
+        self.parts.append(Vec2D(x, y))
+        self.coords = newpos
 
 
 class Death(Exception):
