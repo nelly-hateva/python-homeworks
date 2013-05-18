@@ -15,11 +15,16 @@ class PythonGame:
 
     def __init__(self):
         self.world = World(self.WORLD_WIDTH)
+        row, col = randint(0, self.WORLD_WIDTH), randint(0, self.WORLD_WIDTH)
+        coords = Vec2D(row, col)
+        self.python = Python(self.world, coords, 5, Python.LEFT)
         pygame.init()
         self.screen = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption(self.CAPTION_TEXT)
 
     def play(self):
+        self.draw_apple()
+        self.draw_python()
         while PythonGame.running:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -30,30 +35,31 @@ class PythonGame:
             background = background.convert()
             background.fill(self.BACKGROUND_COLOR)
 
-            self.draw_apple()
-            self.draw_python()
+            
 
             key = pygame.key.get_pressed()
             if key[pygame.K_LEFT]:
-                python.move(Python.LEFT)
+                self.python.move(Python.LEFT)
+                self.draw_python()
             if key[pygame.K_RIGHT]:
-                python.move(Python.RIGHT)
+                self.python.move(Python.RIGHT)
+                self.draw_python()
             if key[pygame.K_UP]:
-                python.move(Python.UP)
+                self.python.move(Python.UP)
+                self.draw_python()
             if key[pygame.K_DOWN]:
-                python.move(Python.DOWN)
+                self.python.move(Python.DOWN)
+                self.draw_python()
 
             pygame.display.flip()
 
     def draw_python(self):
-        row, col = randint(0, self.WORLD_WIDTH), randint(0, self.WORLD_WIDTH)
-        coords = Vec2D(row, col)
-        python = Python(self.world, coords, 3, Python.LEFT)
         r, g, b = self.PYTHON_COLOR
-        x, y = python.coords
-        for ix in range(-5, 5):
-            for iy in range(-5, 5):
-                self.screen.set_at((x + ix, y + iy), (r, g, b))
+        for part_num in range(self.python.size + 1):
+            x, y = self.python.coords - self.python.direction * part_num
+            for ix in range(-5, 5):
+                for iy in range(-5, 5):
+                    self.screen.set_at((x + ix, y + iy), (r, g, b))
 
     def draw_apple(self):
         r, g, b = self.APPLE_COLOR
