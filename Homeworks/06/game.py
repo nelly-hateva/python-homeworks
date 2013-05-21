@@ -9,16 +9,14 @@ class PythonGame:
     BOARD_WIDTH = 704  # 11 * 64
     SIZE = BOARD_WIDTH, BOARD_WIDTH
     WORLD_WIDTH = 64
-    BACKGROUND_COLOR = 0, 0, 0
+    BLACK = 0, 0, 0
     running = True
 
     def __init__(self):
         # Initialize the world and the python
-        self.world = World(self.WORLD_WIDTH)
-        start_coords = Vec2D(4, 4)
+        self.world = World(self.BOARD_WIDTH)
+        start_coords = Vec2D(10, 10)
         self.python = Python(self.world, start_coords, 4, Python.DOWN)
-        self.trail_x = []
-        self.trail_y = []
 
         # Initialize the game
         pygame.init()
@@ -29,8 +27,8 @@ class PythonGame:
     def play(self):
         background = pygame.Surface(self.screen.get_size())
         background = background.convert()
-        background.fill(self.BACKGROUND_COLOR)
-        self.draw_apple()
+        background.fill(self.BLACK)
+        #self.draw_apple()
         self.draw_python()
         pygame.display.flip()
 
@@ -42,21 +40,21 @@ class PythonGame:
             key = pygame.key.get_pressed()
             try:
                 if key[pygame.K_LEFT]:
-                    self.unknow_function(Python.LEFT)
+                    self.python_move(Python.LEFT)
                 if key[pygame.K_RIGHT]:
-                    self.unknow_function(Python.RIGHT)
+                    self.python_move(Python.RIGHT)
                 if key[pygame.K_UP]:
-                    self.unknow_function(Python.UP)
+                    self.python_move(Python.UP)
                 if key[pygame.K_DOWN]:
-                    self.unknow_function(Python.DOWN)
+                    self.python_move(Python.DOWN)
 
             except (Death, ValueError):
 
                 font = pygame.font.Font(None, 50)
                 game_over = font.render("Game Over", 1, (238, 99, 99))
-                self.screen.blit(game_over, (300, 300))
+                self.screen.blit(game_over, (280, 280))
                 pygame.display.flip()
-                self.clock.tick(20)
+                self.clock.tick(50)
                 return  # or reset game
 
     def draw_python(self):
@@ -65,36 +63,34 @@ class PythonGame:
             if self.python.direction in (Python.RIGHT, Python.LEFT):
                 x += 11 * part_num
             else:
-                y+= 11 * part_num
-            print(x, y)
-            self.trail_x.insert(0, x)
-            self.trail_y.insert(0, y)
+                y += 11 * part_num
+            print("after", x, y)
             r, g, b = randint(100, 200), randint(100, 200), randint(100, 200)
             for ix in range(-5, 5):
                 for iy in range(-5, 5):
                     self.screen.set_at((x + ix, y + iy), (r, g, b))
 
     def draw_apple(self):
-        #r, g, b = randint(150, 230), randint(150, 230), randint(150, 230)
-        r, g, b = 255, 0, 0
+        r, g, b = randint(150, 230), randint(150, 230), randint(150, 230)
         x, y = randint(0, self.WORLD_WIDTH), randint(0, self.WORLD_WIDTH)
-        print("apple at", x , y)
+        print("apple at", x, y)
         for ix in range(-5, 5):
             for iy in range(-5, 5):
                 self.screen.set_at((x + ix, y + iy), (r, g, b))
 
-    def draw_trail(self):
-        r, g, b = 0, 0, 0
-        x, y = self.trail_x.pop(), self.trail_y.pop()
+    def hide_trail(self, x, y):
         print("trail at", x, y)
         for ix in range(-5, 5):
             for iy in range(-5, 5):
-                self.screen.set_at((x + ix, y + iy), (r, g, b))
+                self.screen.set_at((x + ix, y + iy), self.BLACK)
 
-    def unknow_function(self, direction):
+    def python_move(self, direction):
+        x, y = self.python.parts[len(self.python.parts) - 1]
         self.python.move(direction)
-        self.draw_trail()
+        print("move")
+        self.hide_trail(x, y)
         pygame.display.flip()
         self.draw_python()
+        self.clock.tick(20)
 
 PythonGame().play()
