@@ -47,9 +47,6 @@ class Vec2D:
         else:
             return False
 
-    def __repr__(self):
-        return 'Vec2d(%s, %s)' % (self.x, self.y)
-
     def __iter__(self):
         return iter((self._x, self._y))
 
@@ -79,16 +76,10 @@ class Cell:
     def is_empty(self):
         return self.contents is None
 
-    def __str__(self):
-        return ".." if self.is_empty() else str(self.contents)
-
 
 class Food(WorldObject):
     def __init__(self, energy):
         self.energy = energy
-
-    def __str__(self):
-        return "AA"
 
 
 class World():
@@ -152,22 +143,13 @@ class World():
 
         self.cells[index] = value
 
-    def __str__(self):
-        rows = (
-            ''.join(str(self.cells[x][y]) for x in range(self.width))
-            for y in range(self.width)
-        )
-        return '\n'.join(rows)
-
 
 class PythonPart(WorldObject):
-    def __str__(self):
-        return "##"
+    pass
 
 
 class PythonHead(PythonPart):
-    def __str__(self):
-        return "@@"
+    pass
 
 
 class Python:
