@@ -68,8 +68,16 @@ class PythonGame:
                 y -= 11 * part_num
             else:
                 y += 11 * part_num
-            print("after", x, y)
-            r, g, b = randint(100, 200), randint(100, 200), randint(100, 200)
+
+            if part_num == 0:
+                print("head at", x, y)
+            else:
+                print("part at", x, y)
+
+            if part_num == 0:
+                r, g, b = 255, 0, 0
+            else:
+                r, g, b = randint(100, 200), randint(100, 200), randint(100, 200)
             for ix in range(-5, 5):
                 for iy in range(-5, 5):
                     self.screen.set_at((x + ix, y + iy), (r, g, b))

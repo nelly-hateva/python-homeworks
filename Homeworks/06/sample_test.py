@@ -101,6 +101,7 @@ class PythonTest(unittest.TestCase):
 
         world = World(25)
         py_size = randint(3, 5)
+
         py = Python(world, Vec2D(10, 10), py_size, direction)
         py.move(direction)
         x, y = Vec2D(10, 10) + direction
@@ -109,7 +110,6 @@ class PythonTest(unittest.TestCase):
         for part_num in range(1, py_size + 1):
             x, y = Vec2D(10, 10) + direction - direction * part_num
             self.assertIsInstance(world[x][y].contents, PythonPart)
-        #self.assertEqual(world[][], None)
 
     def test_move_backwards(self):
         directions = [Python.UP, Python.DOWN, Python.LEFT, Python.RIGHT]
@@ -143,18 +143,6 @@ class PythonTest(unittest.TestCase):
         self.assertIsInstance(world[8][10].contents, PythonHead)
         self.assertEqual(py.size, 4)
 
-    def test_ouroboros_death(self):
-        world = World(25)
-        py = Python(world, Vec2D(10, 10), 5, Python.LEFT)
-        py.move(Python.LEFT)
-        py.move(Python.UP)
-        py.move(Python.UP)
-        py.move(Python.RIGHT)
-
-        with self.assertRaises(Death):
-            py.move(Python.DOWN)
-            py.move(Python.DOWN)
-
     def test_snake_death(self):
         world = World(20)
         py1 = Python(world, Vec2D(5, 5), 3, Python.LEFT)
@@ -162,6 +150,32 @@ class PythonTest(unittest.TestCase):
 
         with self.assertRaises(Death):
             {py2.move(Python.UP) for repeat in range(0, 5)}
+
+    def test_ouroboros_death(self):
+        world = World(25)
+        py = Python(world, Vec2D(10, 10), 5, Python.LEFT)
+        #print(py.world)
+        #print()
+        py.move(Python.LEFT)
+        #print(py.world)
+        #print()
+        py.move(Python.UP)
+        #print(py.world)
+        #print()
+        py.move(Python.UP)
+        #print(py.world)
+        #print()
+        py.move(Python.RIGHT)
+        #print(py.world)
+        #print()
+
+        with self.assertRaises(Death):
+            py.move(Python.DOWN)
+            #print(py.world)
+            #print()
+            py.move(Python.DOWN)
+            #print(py.world)
+            #print()
 
 
 if __name__ == '__main__':

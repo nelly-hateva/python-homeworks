@@ -50,6 +50,9 @@ class Vec2D:
     def __iter__(self):
         return iter((self._x, self._y))
 
+    def __repr__(self):
+        return 'Vec2D(%s, %s)' % (self.x, self.y)
+
 
 class WorldObject:
     pass
@@ -75,6 +78,9 @@ class Cell:
 
     def is_empty(self):
         return self.contents is None
+
+    def __str__(self):
+        return ".." if self.is_empty() else str(self.contents)
 
 
 class Food(WorldObject):
@@ -143,13 +149,23 @@ class World():
 
         self.cells[index] = value
 
+    def __str__(self):
+        rows = (
+            ''.join(str(self._cells[x][y]) for x in range(self._width))
+            for y in range(self._width)
+        )
+
+        return '\n'.join(rows)
+
 
 class PythonPart(WorldObject):
-    pass
+    def __str__(self):
+        return "##"
 
 
 class PythonHead(PythonPart):
-    pass
+    def __str__(self):
+        return "@@"
 
 
 class Python:
@@ -168,10 +184,12 @@ class Python:
         self.parts = []
         x, y = self.coords
         self.world[x][y].contents = self.head
+        #print("head at",x,y)
         for part_num in range(1, size + 1):
             x, y = coords - direction * part_num
             self.parts.append(Vec2D(x, y))
             self.world[x][y].contents = PythonPart()
+            #print("part at",x,y)
 
     def move(self, direction):
         if self.direction == -direction:
@@ -179,6 +197,7 @@ class Python:
         self.direction = direction
         newpos = self.coords + direction
         x, y = newpos
+
         try:
             found = self.world[x][y].contents
         except IndexError:
@@ -188,13 +207,22 @@ class Python:
             raise Death
         if isinstance(found, Food):
             self.size += 1
-        else:
-            x, y = self.parts.pop(0)
-            self.world[x][y].contents = None
+
+        x, y = self.parts.pop()
+        self.world[x][y].contents = None
+        #print("remove part at",x,y)
+        x, y = newpos
         self.world[x][y].contents = self.head
+        #print("move head at",x,y)
         x, y = self.coords
         self.world[x][y].contents = PythonPart()
         self.parts.append(Vec2D(x, y))
+        #print("part at",x,y)
+        for part_num in range(self.size - 1):
+            x, y = self.parts.pop(0)
+            self.world[x][y].contents = PythonPart()
+            self.parts.append(Vec2D(x, y))
+            #print("part at",x,y)
         self.coords = newpos
 
 
