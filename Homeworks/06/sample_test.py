@@ -177,6 +177,14 @@ class PythonTest(unittest.TestCase):
             #print(py.world)
             #print()
 
+    def test_for_the_game(self):
+        world = World(25)
+        start_coords = Vec2D(10, 10)
+        py = Python(world, start_coords, 4, Python.DOWN)
+        print(py.world)
+        print()
+        self.assertEqual(1, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
