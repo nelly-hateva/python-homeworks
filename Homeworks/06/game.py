@@ -60,8 +60,12 @@ class PythonGame:
     def draw_python(self):
         for part_num in range(self.python.size + 1):
             x, y = self.python.coords - self.python.direction * part_num
-            if self.python.direction in (Python.RIGHT, Python.LEFT):
+            if self.python.direction is Python.LEFT:
+                x -= 11 * part_num
+            elif self.python.direction is Python.RIGHT:
                 x += 11 * part_num
+            elif self.python.direction is Python.UP:
+                y -= 11 * part_num
             else:
                 y += 11 * part_num
             print("after", x, y)
